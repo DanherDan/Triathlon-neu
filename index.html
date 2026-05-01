@@ -1,0 +1,888 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="Triathlon">
+  <meta name="theme-color" content="#eef6fb">
+  <link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 180'%3E%3Crect width='180' height='180' rx='40' fill='%23eef6fb'/%3E%3Ccircle cx='90' cy='72' r='28' fill='none' stroke='%232b7fd4' stroke-width='8'/%3E%3Cellipse cx='90' cy='112' rx='34' ry='12' fill='none' stroke='%233aab8e' stroke-width='7'/%3E%3Cpath d='M62 140 Q90 118 118 140' stroke='%23172d42' stroke-width='7' fill='none' stroke-linecap='round'/%3E%3C/svg%3E">
+  <title>Triathlon Training 2026</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,600;1,9..144,300;1,9..144,400;1,9..144,600&family=JetBrains+Mono:wght@400;500&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg:          #eef6fb;
+      --bg-card:     #ffffff;
+      --bg-warm:     #f5fafd;
+      --text-primary:   #172d42;
+      --text-secondary: #4a6880;
+      --text-muted:     #8aa5ba;
+      --accent:      #2b7fd4;
+      --accent-hover:#1f6ab8;
+      --accent-light:#d6eaf8;
+      --sage:        #3aab8e;
+      --sage-light:  #d0f0e6;
+      --border:      rgba(23,45,66,0.09);
+      --shadow-sm:   0 1px 4px rgba(23,45,66,0.07);
+      --shadow-md:   0 4px 20px rgba(23,45,66,0.09), 0 1px 4px rgba(23,45,66,0.05);
+      --shadow-lg:   0 12px 40px rgba(23,45,66,0.14), 0 4px 8px rgba(23,45,66,0.06);
+      --z1: #a8d5e8;
+      --z2: #3aab8e;
+      --z3: #e8a030;
+      --z4: #2b7fd4;
+      --z5: #9b2335;
+      --r:    8px;
+      --r-sm: 4px;
+      --serif: 'Fraunces', Georgia, serif;
+      --mono:  'JetBrains Mono', 'Courier New', monospace;
+      --sans:  'Inter', system-ui, sans-serif;
+      --nav-h: 60px;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { height: 100%; background: var(--bg); }
+    body {
+      min-height: 100%; background: var(--bg); color: var(--text-primary);
+      font-family: var(--sans); -webkit-font-smoothing: antialiased;
+      max-width: 480px; margin: 0 auto; position: relative;
+      padding-top: calc(var(--nav-h) + env(safe-area-inset-top));
+      padding-bottom: calc(24px + env(safe-area-inset-bottom));
+      overflow-x: hidden;
+    }
+
+    /* NAV */
+    .nav {
+      position: fixed; top: 0; left: 50%; transform: translateX(-50%);
+      width: 100%; max-width: 480px; z-index: 100;
+      background: rgba(238,246,251,0.90); backdrop-filter: blur(20px) saturate(1.4);
+      -webkit-backdrop-filter: blur(20px) saturate(1.4);
+      border-bottom: 1px solid var(--border);
+      padding-top: env(safe-area-inset-top);
+    }
+    .nav-inner { display: grid; grid-template-columns: repeat(4,1fr); height: var(--nav-h); }
+    .tab-btn {
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      gap: 3px; border: none; background: transparent; cursor: pointer;
+      font-family: var(--mono); font-size: 10px; letter-spacing: 0.06em;
+      color: var(--text-muted); -webkit-tap-highlight-color: transparent;
+      transition: color 0.18s; min-height: 44px; padding: 8px 4px;
+      text-transform: uppercase;
+    }
+    .tab-btn .tab-icon { font-size: 18px; line-height: 1; }
+    .tab-btn.active { color: var(--accent); }
+    .tab-btn.active .tab-dot { display: block; width: 4px; height: 4px; border-radius: 50%; background: var(--accent); margin: 2px auto 0; }
+    .tab-dot { display: none; }
+
+    /* TAB CONTENT */
+    .tab-pane { display: none; animation: fadeIn 0.22s ease; padding: 24px 16px 0; }
+    .tab-pane.active { display: block; }
+    @keyframes fadeIn { from { opacity:0; transform:translateY(6px); } to { opacity:1; transform:translateY(0); } }
+
+    /* CARDS */
+    .card { background: var(--bg-card); border-radius: var(--r); box-shadow: var(--shadow-sm); padding: 20px; border: 1px solid var(--border); margin-bottom: 12px; }
+    .card-accent { border-left: 3px solid var(--accent); }
+    .card-sage   { border-left: 3px solid var(--sage); }
+
+    /* TODAY TAB */
+    .countdown-block {
+      background: var(--text-primary); color: #fff;
+      border-radius: var(--r); padding: 20px; margin-bottom: 12px;
+      position: relative; overflow: hidden;
+    }
+    .countdown-block::after {
+      content: ''; position: absolute; right: -20px; top: -20px;
+      width: 130px; height: 130px; border-radius: 50%;
+      background: rgba(43,127,212,0.18);
+    }
+    .countdown-days { font-family: var(--mono); font-size: 54px; font-weight: 500; line-height: 1; color: var(--accent); letter-spacing: -2px; }
+    .countdown-label { font-family: var(--mono); font-size: 11px; letter-spacing: 0.1em; opacity: 0.55; margin-top: 4px; text-transform: uppercase; }
+    .countdown-date { font-family: var(--serif); font-size: 14px; opacity: 0.7; margin-top: 8px; }
+    .race-info { font-family: var(--mono); font-size: 10px; letter-spacing: 0.06em; opacity: 0.4; margin-top: 6px; text-transform: uppercase; }
+
+    .progress-bar-wrap { margin-bottom: 20px; }
+    .progress-header { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 8px; }
+    .label-mono { font-family: var(--mono); font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-muted); }
+    .progress-track { height: 5px; background: var(--border); border-radius: 3px; overflow: hidden; }
+    .progress-fill { height: 100%; background: linear-gradient(90deg, var(--sage), var(--accent)); border-radius: 3px; transition: width 0.4s ease; }
+
+    .today-main-card { background: var(--bg-card); border-radius: var(--r); box-shadow: var(--shadow-md); border: 1px solid var(--border); overflow: hidden; margin-bottom: 16px; }
+    .today-card-header { padding: 16px 20px 0; }
+    .today-card-body   { padding: 12px 20px 20px; }
+    .workout-headline { font-family: var(--serif); font-style: italic; font-size: 28px; font-weight: 400; line-height: 1.2; margin: 8px 0 4px; }
+    .workout-km { font-family: var(--mono); font-size: 22px; font-weight: 500; color: var(--accent); }
+    .workout-desc { font-size: 14px; color: var(--text-secondary); margin-top: 10px; line-height: 1.65; }
+
+    .done-btn {
+      display: flex; align-items: center; justify-content: center; gap: 8px;
+      width: 100%; padding: 14px; margin-top: 16px;
+      border: 1.5px solid var(--accent); background: transparent;
+      color: var(--accent); border-radius: var(--r); cursor: pointer;
+      font-family: var(--mono); font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase;
+      -webkit-tap-highlight-color: transparent; transition: all 0.18s; min-height: 44px;
+    }
+    .done-btn:active { transform: translateY(1px); }
+    .done-btn.completed { background: var(--accent); color: white; border-color: var(--accent); }
+    .done-btn.completed::before { content: '✓ '; }
+
+    .rest-card { text-align: center; padding: 32px 20px; }
+    .rest-icon  { font-size: 36px; margin-bottom: 12px; }
+    .rest-title { font-family: var(--serif); font-size: 22px; margin-bottom: 8px; }
+
+    .week-mini-title { font-family: var(--mono); font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-muted); margin-bottom: 10px; }
+    .week-mini-sessions { display: flex; flex-direction: column; gap: 8px; }
+    .mini-session {
+      display: flex; align-items: center; gap: 12px; padding: 12px;
+      background: var(--bg-card); border-radius: var(--r-sm);
+      border: 1px solid var(--border); cursor: pointer;
+      -webkit-tap-highlight-color: transparent; transition: box-shadow 0.15s; min-height: 44px;
+    }
+    .mini-session:active { box-shadow: var(--shadow-sm); }
+    .mini-session.is-today { border-color: var(--accent); background: var(--accent-light); }
+    .mini-session.is-done  { opacity: 0.5; }
+    .mini-day  { font-family: var(--mono); font-size: 11px; letter-spacing: 0.06em; color: var(--text-muted); min-width: 24px; }
+    .mini-info { flex: 1; }
+    .mini-type { font-family: var(--serif); font-size: 15px; }
+    .mini-type.is-done-text { text-decoration: line-through; color: var(--text-muted); }
+    .mini-km   { font-family: var(--mono); font-size: 12px; color: var(--text-muted); }
+    .mini-check { font-size: 14px; color: var(--sage); }
+    .zone-dot  { width: 9px; height: 9px; border-radius: 50%; flex-shrink: 0; }
+
+    /* WOCHE TAB */
+    .week-block { margin-bottom: 24px; }
+    .week-block-header { display: flex; align-items: baseline; gap: 10px; margin-bottom: 2px; padding-bottom: 8px; border-bottom: 1px solid var(--border); }
+    .week-num   { font-family: var(--serif); font-style: italic; font-size: 28px; color: var(--text-muted); }
+    .week-phase { font-family: var(--mono); font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--accent); }
+    .week-km    { font-family: var(--mono); font-size: 13px; color: var(--text-secondary); margin-left: auto; }
+    .week-current-label { font-family: var(--mono); font-size: 10px; color: var(--sage); letter-spacing: 0.06em; text-transform: uppercase; }
+    .week-sessions-wrap { padding: 4px 12px; background: var(--bg-card); border-radius: var(--r); border: 1px solid var(--border); }
+    .week-block.is-current .week-sessions-wrap { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-light); }
+    .week-block.is-past .week-num { opacity: 0.4; }
+    .session-row {
+      display: flex; align-items: center; gap: 10px; padding: 12px 0;
+      border-bottom: 1px solid var(--border); cursor: pointer;
+      -webkit-tap-highlight-color: transparent; min-height: 54px;
+    }
+    .session-row:last-child { border-bottom: none; }
+    .session-row.is-today-row { background: var(--accent-light); margin: 0 -12px; padding: 12px; border-radius: var(--r-sm); }
+    .session-row.is-done-row .session-type,
+    .session-row.is-done-row .session-date { color: var(--text-muted); text-decoration: line-through; opacity: 0.6; }
+    .session-day-col { font-family: var(--mono); font-size: 11px; color: var(--text-muted); min-width: 26px; }
+    .session-date    { font-family: var(--mono); font-size: 10px; color: var(--text-muted); min-width: 44px; }
+    .session-type    { font-family: var(--serif); font-size: 16px; flex: 1; }
+    .session-km-col  { font-family: var(--mono); font-size: 12px; color: var(--text-secondary); min-width: 38px; text-align: right; }
+    .session-done-mark { font-size: 14px; color: var(--sage); min-width: 18px; text-align: center; }
+
+    /* PLAN TAB */
+    .section-title { font-family: var(--serif); font-size: 22px; font-weight: 600; padding-bottom: 10px; border-bottom: 2px solid var(--accent); margin-bottom: 20px; display: inline-block; }
+    .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px; }
+    .stat-card  { background: var(--bg-card); border-radius: var(--r); border: 1px solid var(--border); padding: 16px; }
+    .stat-value { font-family: var(--mono); font-size: 28px; font-weight: 500; color: var(--accent); }
+    .stat-label { font-family: var(--mono); font-size: 10px; letter-spacing: 0.08em; color: var(--text-muted); text-transform: uppercase; margin-top: 4px; }
+    .info-card  { background: var(--bg-card); border-radius: var(--r); border: 1px solid var(--border); padding: 20px; margin-bottom: 12px; }
+    .info-card h3  { font-family: var(--serif); font-size: 18px; margin-bottom: 10px; }
+    .info-card p, .info-card li { font-size: 14px; color: var(--text-secondary); line-height: 1.7; }
+    .info-card ul  { padding-left: 16px; }
+    .info-card li  { margin-bottom: 4px; }
+    .reset-btn {
+      display: block; width: 100%; padding: 14px;
+      border: 1.5px solid var(--border); background: transparent;
+      color: var(--text-muted); border-radius: var(--r); cursor: pointer;
+      font-family: var(--mono); font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase;
+      -webkit-tap-highlight-color: transparent; margin-top: 24px; min-height: 44px;
+    }
+
+    /* ZONEN TAB */
+    .zone-card { background: var(--bg-card); border-radius: var(--r); border: 1px solid var(--border); padding: 18px; margin-bottom: 10px; display: flex; gap: 14px; align-items: flex-start; }
+    .zone-color-bar { width: 4px; border-radius: 2px; min-height: 70px; flex-shrink: 0; margin-top: 2px; }
+    .zone-name    { font-family: var(--serif); font-size: 18px; margin-bottom: 3px; }
+    .zone-purpose { font-size: 13px; color: var(--text-secondary); margin-bottom: 8px; }
+    .zone-stats   { display: flex; gap: 12px; flex-wrap: wrap; }
+    .zone-stat-label { font-family: var(--mono); font-size: 9px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-muted); }
+    .zone-stat-val   { font-family: var(--mono); font-size: 13px; font-weight: 500; }
+
+    /* MODAL */
+    .modal-overlay {
+      position: fixed; inset: 0; background: rgba(10,24,38,0.52);
+      z-index: 200; display: flex; align-items: flex-end;
+      backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px);
+      opacity: 0; pointer-events: none; transition: opacity 0.25s;
+    }
+    .modal-overlay.open { opacity: 1; pointer-events: all; }
+    .modal-sheet {
+      width: 100%; max-height: 88vh; background: var(--bg-warm);
+      border-radius: 20px 20px 0 0; overflow-y: auto;
+      padding: 0 0 calc(32px + env(safe-area-inset-bottom));
+      transform: translateY(100%); transition: transform 0.3s cubic-bezier(0.32,0.72,0,1);
+      box-shadow: var(--shadow-lg); touch-action: pan-y; -webkit-overflow-scrolling: touch;
+    }
+    .modal-overlay.open .modal-sheet { transform: translateY(0); }
+    .modal-handle { width: 36px; height: 4px; background: var(--border); border-radius: 2px; margin: 14px auto 8px; }
+    .modal-body   { padding: 8px 24px 0; }
+    .modal-eyebrow { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 8px; }
+    .modal-eyebrow span { font-family: var(--mono); font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-muted); }
+    .modal-eyebrow .sep { opacity: 0.3; }
+    .modal-title { font-family: var(--serif); font-style: italic; font-size: 30px; font-weight: 400; line-height: 1.2; margin-bottom: 4px; }
+    .modal-km    { font-family: var(--mono); font-size: 24px; color: var(--accent); margin-bottom: 20px; }
+    .modal-blocks { display: flex; flex-direction: column; gap: 8px; margin-bottom: 20px; }
+    .modal-block { display: flex; align-items: flex-start; background: var(--bg-card); border-radius: var(--r-sm); border: 1px solid var(--border); overflow: hidden; }
+    .block-zone-bar { width: 4px; flex-shrink: 0; }
+    .block-inner  { padding: 12px 14px; flex: 1; }
+    .block-num    { font-family: var(--mono); font-size: 9px; letter-spacing: 0.1em; color: var(--text-muted); text-transform: uppercase; margin-bottom: 2px; }
+    .block-label  { font-family: var(--serif); font-size: 16px; }
+    .block-detail { font-family: var(--mono); font-size: 11px; color: var(--text-secondary); margin-top: 2px; }
+    .modal-hint { background: var(--sage-light); border-radius: var(--r); padding: 14px; margin-bottom: 20px; }
+    .modal-hint-label { font-family: var(--mono); font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--sage); margin-bottom: 6px; }
+    .modal-hint-text  { font-size: 14px; color: var(--text-secondary); line-height: 1.65; }
+    .modal-done-btn {
+      display: flex; align-items: center; justify-content: center; gap: 8px;
+      width: 100%; padding: 16px; border: 1.5px solid var(--accent);
+      background: transparent; color: var(--accent); border-radius: var(--r);
+      cursor: pointer; font-family: var(--mono); font-size: 12px; letter-spacing: 0.08em;
+      text-transform: uppercase; -webkit-tap-highlight-color: transparent; transition: all 0.18s;
+      min-height: 50px; margin-top: 4px;
+    }
+    .modal-done-btn:active { transform: translateY(1px); }
+    .modal-done-btn.completed { background: var(--accent); color: white; border-color: var(--accent); }
+    .modal-done-btn.completed::before { content: '✓ '; }
+    .modal-close-btn {
+      display: flex; align-items: center; justify-content: center;
+      width: 100%; padding: 14px; border: none; background: transparent;
+      color: var(--text-muted); cursor: pointer; font-family: var(--mono);
+      font-size: 11px; letter-spacing: 0.06em; text-transform: uppercase;
+      -webkit-tap-highlight-color: transparent; margin-top: 8px; min-height: 44px;
+    }
+
+    /* RACE DAY */
+    .race-day-block { background: var(--text-primary); color: #fff; border-radius: var(--r); padding: 24px; margin-bottom: 12px; text-align: center; }
+    .race-day-title  { font-family: var(--serif); font-style: italic; font-size: 32px; margin-bottom: 8px; }
+    .race-distances  { display: flex; justify-content: center; gap: 20px; margin-top: 16px; }
+    .race-dist       { text-align: center; }
+    .race-dist-val   { font-family: var(--mono); font-size: 22px; color: var(--accent); }
+    .race-dist-label { font-family: var(--mono); font-size: 10px; letter-spacing: 0.06em; opacity: 0.5; text-transform: uppercase; }
+    .race-sep        { color: rgba(255,255,255,0.2); font-size: 24px; display: flex; align-items: center; }
+
+    .badge { display: inline-flex; align-items: center; padding: 3px 8px; border-radius: 12px; font-family: var(--mono); font-size: 10px; letter-spacing: 0.06em; text-transform: uppercase; }
+    .badge-accent { background: var(--accent-light); color: var(--accent); }
+    .badge-sage   { background: var(--sage-light);   color: var(--sage);   }
+    .spacer { height: 16px; }
+  </style>
+</head>
+<body>
+<nav class="nav">
+  <div class="nav-inner">
+    <button class="tab-btn active" data-tab="heute" onclick="switchTab('heute')">
+      <span class="tab-icon">◎</span><span>Heute</span><span class="tab-dot"></span>
+    </button>
+    <button class="tab-btn" data-tab="woche" onclick="switchTab('woche')">
+      <span class="tab-icon">▤</span><span>Woche</span><span class="tab-dot"></span>
+    </button>
+    <button class="tab-btn" data-tab="plan" onclick="switchTab('plan')">
+      <span class="tab-icon">◈</span><span>Plan</span><span class="tab-dot"></span>
+    </button>
+    <button class="tab-btn" data-tab="zonen" onclick="switchTab('zonen')">
+      <span class="tab-icon">◐</span><span>Zonen</span><span class="tab-dot"></span>
+    </button>
+  </div>
+</nav>
+
+<div id="tab-heute" class="tab-pane active"></div>
+<div id="tab-woche" class="tab-pane"></div>
+<div id="tab-plan"  class="tab-pane"></div>
+<div id="tab-zonen" class="tab-pane"></div>
+
+<div id="modal-overlay" class="modal-overlay" onclick="handleOverlayClick(event)">
+  <div id="modal-sheet" class="modal-sheet">
+    <div class="modal-handle"></div>
+    <div class="modal-body" id="modal-body"></div>
+  </div>
+</div>
+
+<script>
+// ── DATA ──────────────────────────────────────────────────────
+const PLAN_START = new Date('2026-05-04T00:00:00');
+const RACE_DAY   = new Date('2026-07-12T00:00:00');
+const LS_KEY = 'triathlon-completed';
+
+function d(s) { return new Date(s + 'T00:00:00'); }
+
+const PLAN = [
+  {
+    week:1, phase:'Aufbau', totalKm:17, sessions:[
+      { id:'w1d1', day:'Mi', date:d('2026-05-06'), type:'Lockerer Lauf', km:5, primaryZone:'Z2',
+        blocks:[{num:'01',label:'Lockerer Lauf',detail:'5 km',zone:'Z2'}],
+        hint:'Pace ~7:00–7:15/km. Die Atmung sollte ein Gespräch erlauben – kein Schnaufen. Lieber kurz gehen als das Tempo zu erhöhen. Zone 2 ist langsamer als du denkst.' },
+      { id:'w1d2', day:'Fr', date:d('2026-05-08'), type:'Langer Lauf', km:6, primaryZone:'Z2',
+        blocks:[{num:'01',label:'Langer Lauf',detail:'6 km',zone:'Z2'}],
+        hint:'Der Freitagslauf ist der Grundlagenblock. Tempo konstant halten, in der zweiten Hälfte nicht pushen. HF maximal 146 bpm – beim Gefühl orientieren, nicht nur an der Uhr.' },
+      { id:'w1d3', day:'So', date:d('2026-05-10'), type:'Intervalltraining', km:6, primaryZone:'Z4',
+        blocks:[
+          {num:'01',label:'Einlaufen',detail:'10 min locker',zone:'Z2'},
+          {num:'02',label:'5× 2 min schnell',detail:'Pace ~5:00–5:20/km',zone:'Z4'},
+          {num:'03',label:'Trabpause',detail:'60 s zwischen jeder Wiederholung',zone:'Z2'},
+          {num:'04',label:'Auslaufen',detail:'10 min locker',zone:'Z2'}],
+        hint:'Erster Reiz für die VO2max. Die 2-Minuten-Blöcke sollen sich hart anfühlen – aber kontrolliert. Die HF-Anzeige hinkt bei kurzen Intervallen nach: auf das Atemgefühl achten.' }
+    ]
+  },
+  {
+    week:2, phase:'Aufbau', totalKm:19, sessions:[
+      { id:'w2d1', day:'Mi', date:d('2026-05-13'), type:'Lockerer Lauf', km:5, primaryZone:'Z2',
+        blocks:[{num:'01',label:'Lockerer Lauf',detail:'5 km',zone:'Z2'}],
+        hint:'Erholungslauf nach dem Sonntag. Tempo wirklich locker halten – HF unter 146. Wenn es sich zu einfach anfühlt, ist das genau richtig.' },
+      { id:'w2d2', day:'Fr', date:d('2026-05-15'), type:'Langer Lauf', km:7, primaryZone:'Z2',
+        blocks:[{num:'01',label:'Langer Lauf',detail:'7 km',zone:'Z2'}],
+        hint:'7 km in Zone 2 – die erste kleine Steigerung. Pace ~7:00–7:15/km. Besonders in der zweiten Hälfte nicht rauslaufen lassen.' },
+      { id:'w2d3', day:'So', date:d('2026-05-17'), type:'Intervalltraining', km:7, primaryZone:'Z4',
+        blocks:[
+          {num:'01',label:'Einlaufen',detail:'10 min locker',zone:'Z2'},
+          {num:'02',label:'6× 2 min schnell',detail:'Pace ~5:00–5:20/km',zone:'Z4'},
+          {num:'03',label:'Trabpause',detail:'60 s zwischen jeder Wiederholung',zone:'Z2'},
+          {num:'04',label:'Auslaufen',detail:'10 min locker',zone:'Z2'}],
+        hint:'Eine Wiederholung mehr als letzte Woche. Die ersten 4 sollten sich kontrolliert anfühlen, die letzten 2 dürfen zwicken. Pausen konsequent einhalten – nicht verkürzen.' }
+    ]
+  },
+  {
+    week:3, phase:'Aufbau', totalKm:21, sessions:[
+      { id:'w3d1', day:'Mi', date:d('2026-05-20'), type:'Lockerer Lauf', km:6, primaryZone:'Z2',
+        blocks:[{num:'01',label:'Lockerer Lauf',detail:'6 km',zone:'Z2'}],
+        hint:'Dritter Mittwoch im Aufbau. Tempo locker, HF konstant. Kopfhörer rein, Pace beobachten, Gehirn ausschalten. Zone 2 ist Meditationszeit.' },
+      { id:'w3d2', day:'Fr', date:d('2026-05-22'), type:'Langer Lauf', km:8, primaryZone:'Z2',
+        blocks:[{num:'01',label:'Langer Lauf',detail:'8 km',zone:'Z2'}],
+        hint:'8 km – der erste echte Langstreckenlauf des Plans. Hydration nicht vergessen. Etwas trinken mitnehmen oder Route an einem Brunnen planen.' },
+      { id:'w3d3', day:'So', date:d('2026-05-24'), type:'Intervalltraining', km:7.5, primaryZone:'Z4',
+        blocks:[
+          {num:'01',label:'Einlaufen',detail:'10 min locker',zone:'Z2'},
+          {num:'02',label:'5× 3 min schnell',detail:'Pace ~5:00–5:20/km',zone:'Z4'},
+          {num:'03',label:'Trabpause',detail:'90 s zwischen jeder Wiederholung',zone:'Z2'},
+          {num:'04',label:'Auslaufen',detail:'10 min locker',zone:'Z2'}],
+        hint:'Längere Intervalle, mehr Erholung. 3 Minuten pro Block ist psychologisch härter als 2 – bleib ruhig in der ersten Minute, dann aufbauen. Abschluss Block 1: du bist bereit für die VO2max-Phase.' }
+    ]
+  },
+  {
+    week:4, phase:'VO2max · Entlastung', totalKm:16, sessions:[
+      { id:'w4d1', day:'Mi', date:d('2026-05-27'), type:'Lockerer Lauf', km:4, primaryZone:'Z2',
+        blocks:[{num:'01',label:'Lockerer Lauf',detail:'4 km',zone:'Z2'}],
+        hint:'Entlastungswoche – bewusst weniger. Kein Guilt, kein Draufpacken. Der Körper verbessert sich in der Pause, nicht im Training.' },
+      { id:'w4d2', day:'Fr', date:d('2026-05-29'), type:'Langer Lauf', km:6, primaryZone:'Z2',
+        blocks:[{num:'01',label:'Langer Lauf',detail:'6 km',zone:'Z2'}],
+        hint:'Kürzerer Freitag als letzte Woche – das ist Absicht. Füße locker, HF unter 146, keine Helden-Aktionen.' },
+      { id:'w4d3', day:'So', date:d('2026-05-31'), type:'Intervalltraining', km:6.5, primaryZone:'Z4',
+        blocks:[
+          {num:'01',label:'Einlaufen',detail:'10 min locker',zone:'Z2'},
+          {num:'02',label:'4× 3 min schnell',detail:'Pace ~5:00–5:20/km',zone:'Z4'},
+          {num:'03',label:'Trabpause',detail:'90 s zwischen jeder Wiederholung',zone:'Z2'},
+          {num:'04',label:'Auslaufen',detail:'10 min locker',zone:'Z2'}],
+        hint:'Weniger Wiederholungen, aber gleiche Qualität. Schärfer ausführen statt mehr machen. Nach dieser Woche startet die eigentliche VO2max-Hauptphase.' }
+    ]
+  },
+  {
+    week:5, phase:'VO2max-Phase', totalKm:22, sessions:[
+      { id:'w5d1', day:'Mi', date:d('2026-06-03'), type:'Lockerer Lauf', km:6, primaryZone:'Z2',
+        blocks:[{num:'01',label:'Lockerer Lauf',detail:'6 km',zone:'Z2'}],
+        hint:'Nach der Entlastungswoche fühlst du dich wahrscheinlich frisch. Trotzdem: Zone 2 bleibt Zone 2. Die Energie für Sonntag aufsparen.' },
+      { id:'w5d2', day:'Fr', date:d('2026-06-05'), type:'Langer Lauf', km:8, primaryZone:'Z2',
+        blocks:[{num:'01',label:'Langer Lauf',detail:'8 km',zone:'Z2'}],
+        hint:'Rückkehr zur 8-km-Marke. Fühlt sich nach der Entlastungswoche leichter an als letztes Mal? Das ist Adaptation. Gut so.' },
+      { id:'w5d3', day:'So', date:d('2026-06-07'), type:'Königsdisziplin', km:8, primaryZone:'Z4',
+        blocks:[
+          {num:'01',label:'Einlaufen',detail:'10 min locker',zone:'Z2'},
+          {num:'02',label:'5× 4 min schnell',detail:'Pace ~5:00–5:20/km',zone:'Z4'},
+          {num:'03',label:'Trabpause',detail:'2 min zwischen jeder Wiederholung',zone:'Z2'},
+          {num:'04',label:'Auslaufen',detail:'10 min locker',zone:'Z2'}],
+        hint:'Das klassische VO2max-Workout. 5× 4 Minuten ist der härteste Reiz für die maximale Sauerstoffaufnahme. Pace gleichmäßig halten – nicht in den ersten 2 Minuten zu schnell. Längste Pausen des Plans – nutze sie.' }
+    ]
+  },
+  {
+    week:6, phase:'VO2max-Phase', totalKm:24, sessions:[
+      { id:'w6d1', day:'Mi', date:d('2026-06-10'), type:'Lockerer Lauf', km:7, primaryZone:'Z2',
+        blocks:[{num:'01',label:'Lockerer Lauf',detail:'7 km',zone:'Z2'}],
+        hint:'Steigerung auf 7 km. Konsistenz über Intensität. Zone 2, Atmung ruhig, kein Stress.' },
+      { id:'w6d2', day:'Fr', date:d('2026-06-12'), type:'Langer Lauf', km:9, primaryZone:'Z2',
+        blocks:[{num:'01',label:'Langer Lauf',detail:'9 km',zone:'Z2'}],
+        hint:'9 km – näher an der Wettkampfdistanz. Pace bewusst halten, besonders auf den letzten 2 km nicht rauslaufen. Was zählt ist Zeit auf den Beinen, nicht Speed.' },
+      { id:'w6d3', day:'So', date:d('2026-06-14'), type:'Intervalltraining', km:8, primaryZone:'Z5',
+        blocks:[
+          {num:'01',label:'Einlaufen',detail:'10 min locker',zone:'Z2'},
+          {num:'02',label:'6× 3 min schnell',detail:'Pace ~4:50–5:10/km',zone:'Z4–5'},
+          {num:'03',label:'Trabpause',detail:'90 s zwischen jeder Wiederholung',zone:'Z2'},
+          {num:'04',label:'Auslaufen',detail:'10 min locker',zone:'Z2'}],
+        hint:'Zone 4–5: ein Schritt schärfer. Sechs Blöcke, etwas kürzer, aber intensiver. Die letzten 2 Blöcke werden schwer – das ist der Punkt. Kontrolle halten, nicht durchstarten.' }
+    ]
+  },
+  {
+    week:7, phase:'VO2max-Phase', totalKm:26, sessions:[
+      { id:'w7d1', day:'Mi', date:d('2026-06-17'), type:'Lauf + Steigerungen', km:7, primaryZone:'Z2',
+        blocks:[
+          {num:'01',label:'Lockerer Lauf',detail:'7 km',zone:'Z2'},
+          {num:'02',label:'4× 100 m Steigerungen',detail:'Progressiv auf ~Z4 beschleunigen, locker gehen zurück',zone:'Z3–4'}],
+        hint:'Die Steigerungen am Ende wecken die schnellen Fasern. Nicht sprinten – fließend auf ~80–85% steigern. Der Körper braucht das vor dem Intervall-Sonntag.' },
+      { id:'w7d2', day:'Fr', date:d('2026-06-19'), type:'Langer Lauf', km:10, primaryZone:'Z2',
+        blocks:[{num:'01',label:'Langer Lauf',detail:'10 km',zone:'Z2'}],
+        hint:'Erster 10-km-Lauf des Plans – die Wettkampfdistanz. Pace bewusst langsam halten. Du läufst am 12. Juli 10 km nach 1,5 km Schwimmen und 40 km Rad.' },
+      { id:'w7d3', day:'So', date:d('2026-06-21'), type:'Königsdisziplin', km:8.5, primaryZone:'Z4',
+        blocks:[
+          {num:'01',label:'Einlaufen',detail:'10 min locker',zone:'Z2'},
+          {num:'02',label:'5× 4 min schnell',detail:'Pace ~5:00–5:20/km',zone:'Z4'},
+          {num:'03',label:'Trabpause',detail:'2 min zwischen jeder Wiederholung',zone:'Z2'},
+          {num:'04',label:'Auslaufen',detail:'10 min locker',zone:'Z2'}],
+        hint:'Nochmal das Königsdisziplin-Workout – zweiter Peak der VO2max-Phase. Vergleiche mit Woche 5: gleiche Blöcke, aber heute sollte es sich kontrollierter anfühlen. Das ist Fortschritt.' }
+    ]
+  },
+  {
+    week:8, phase:'Wettkampfspezifisch', totalKm:25, sessions:[
+      { id:'w8d1', day:'Mi', date:d('2026-06-24'), type:'Tempolauf', km:7, primaryZone:'Z3',
+        blocks:[
+          {num:'01',label:'Einlaufen',detail:'2 km locker',zone:'Z2'},
+          {num:'02',label:'Tempoblock',detail:'4 km im Schwellentempo',zone:'Z3'},
+          {num:'03',label:'Auslaufen',detail:'1 km locker',zone:'Z2'}],
+        hint:'Zone 3 ist das Wettkampftempo: 5:50–6:10/km, HF 147–159. Der Übergang aus dem Radsattel verschiebt das Gefühl – deswegen trainieren wir das jetzt.' },
+      { id:'w8d2', day:'Fr', date:d('2026-06-26'), type:'Progressiver Lauf', km:10, primaryZone:'Z3',
+        blocks:[
+          {num:'01',label:'Langer Lauf',detail:'7 km locker',zone:'Z2'},
+          {num:'02',label:'Finale',detail:'Letzten 3 km in Zone 3',zone:'Z3'}],
+        hint:'Progressiver Lauf: Die ersten 7 km sammeln Grundlagenkilometer, die letzten 3 üben das Wettkampfgefühl. Am Ende anstrengend aber nicht überwältigend.' },
+      { id:'w8d3', day:'So', date:d('2026-06-28'), type:'Kurze Scharf-Intervalle', km:7.5, primaryZone:'Z5',
+        blocks:[
+          {num:'01',label:'Einlaufen',detail:'10 min locker',zone:'Z2'},
+          {num:'02',label:'8× 90 s Sprint',detail:'Pace <5:00/km',zone:'Z5'},
+          {num:'03',label:'Trabpause',detail:'90 s zwischen jeder Wiederholung',zone:'Z2'},
+          {num:'04',label:'Auslaufen',detail:'10 min locker',zone:'Z2'}],
+        hint:'Kurz und scharf. 8 Blöcke, nur 90 Sekunden – maximale Kraftentwicklung, verbesserte Laufökonomie und Schrittfrequenz.' }
+    ]
+  },
+  {
+    week:9, phase:'Wettkampfspezifisch', totalKm:22, sessions:[
+      { id:'w9d1', day:'Mi', date:d('2026-07-01'), type:'Tempolauf', km:6, primaryZone:'Z3',
+        blocks:[
+          {num:'01',label:'Einlaufen',detail:'2 km locker',zone:'Z2'},
+          {num:'02',label:'Tempoblock',detail:'3 km im Schwellentempo',zone:'Z3'},
+          {num:'03',label:'Auslaufen',detail:'1 km locker',zone:'Z2'}],
+        hint:'Etwas kürzer als letzte Woche – der Taper beginnt. Das Schwellentempo soll sich vertraut und machbar anfühlen. Nicht pushen.' },
+      { id:'w9d2', day:'Fr', date:d('2026-07-03'), type:'Testlauf', km:10, primaryZone:'Z3',
+        blocks:[{num:'01',label:'10 km Testlauf',detail:'Durchgehend im Zielrenntempo',zone:'Z3'}],
+        hint:'Generalprobe. 10 km bei ~6:00/km – das ist dein Wettkampftempo. Erste 2 km bewusst langsam anlaufen, dann einpendeln. Dieses Ergebnis zeigt realistisch, was am 12. Juli möglich ist.' },
+      { id:'w9d3', day:'So', date:d('2026-07-05'), type:'Intervalltraining', km:7.5, primaryZone:'Z4',
+        blocks:[
+          {num:'01',label:'Einlaufen',detail:'10 min locker',zone:'Z2'},
+          {num:'02',label:'5× 3 min schnell',detail:'Pace ~5:00–5:20/km',zone:'Z4'},
+          {num:'03',label:'Trabpause',detail:'90 s zwischen jeder Wiederholung',zone:'Z2'},
+          {num:'04',label:'Auslaufen',detail:'10 min locker',zone:'Z2'}],
+        hint:'Letztes richtiges Intervalltraining vor dem Wettkampf. Ziel ist Aktivierung, nicht Erschöpfung. Nach heute beginnt Woche 10: Tapering.' }
+    ]
+  },
+  {
+    week:10, phase:'Tapering', totalKm:12, sessions:[
+      { id:'w10d1', day:'Mo', date:d('2026-07-06'), type:'Lockerer Lauf', km:4, primaryZone:'Z2',
+        blocks:[{num:'01',label:'Lockerer Lauf',detail:'4 km sehr locker',zone:'Z2'}],
+        hint:'Erster Tapering-Tag. Sehr leicht, keine Anstrengung. Die Arbeit ist getan – jetzt geht es nur noch ums Frischhalten. HF maximal 140.' },
+      { id:'w10d2', day:'Mi', date:d('2026-07-08'), type:'Kurze Aktivierung', km:5, primaryZone:'Z4',
+        blocks:[
+          {num:'01',label:'Einlaufen',detail:'10 min locker',zone:'Z2'},
+          {num:'02',label:'4× 90 s schnell',detail:'Pace ~5:00–5:20/km',zone:'Z4'},
+          {num:'03',label:'Trabpause',detail:'2 min zwischen jeder Wiederholung',zone:'Z2'},
+          {num:'04',label:'Auslaufen',detail:'10 min locker',zone:'Z2'}],
+        hint:'Vier kurze Aktivierungsblöcke – die schnellen Fasern wachrütteln ohne zu ermüden. Nicht mehr als das. Danach: erholen, schlafen, gut essen.' },
+      { id:'w10d3', day:'Fr', date:d('2026-07-10'), type:'Letzter Lauf', km:3, primaryZone:'Z2',
+        blocks:[
+          {num:'01',label:'Lockerer Lauf',detail:'3 km sehr leicht',zone:'Z2'},
+          {num:'02',label:'3× 100 m Steigerungen',detail:'Progressiv auf ~Z3 steigern, locker gehen zurück',zone:'Z3'}],
+        hint:'Letzter Lauf vor dem Wettkampf. Nur 3 km – das ist kein Fehler. Die Steigerungen wecken die Muskulatur auf. Morgen: komplette Pause. Übermorgen: Race Day.' }
+    ]
+  }
+];
+
+// ── STATE ─────────────────────────────────────────────────────
+let completed = {};
+try { completed = JSON.parse(localStorage.getItem(LS_KEY) || '{}'); } catch(e){}
+
+function saveCompleted() { localStorage.setItem(LS_KEY, JSON.stringify(completed)); }
+function toggleDone(id) {
+  if (completed[id]) delete completed[id]; else completed[id] = new Date().toISOString();
+  saveCompleted(); renderAll();
+}
+function isDone(id) { return !!completed[id]; }
+function allSessions() { return PLAN.flatMap(w => w.sessions); }
+function getDoneCount() { return Object.keys(completed).length; }
+function getDoneKm() { return allSessions().filter(s=>isDone(s.id)).reduce((a,s)=>a+s.km,0); }
+function daysBetween(a,b) { return Math.round((b-a)/86400000); }
+function today() { const n=new Date(); n.setHours(0,0,0,0); return n; }
+function sameDay(a,b) { return a.getFullYear()===b.getFullYear()&&a.getMonth()===b.getMonth()&&a.getDate()===b.getDate(); }
+function formatDate(dt) { return dt.toLocaleDateString('de-DE',{day:'2-digit',month:'2-digit'}); }
+
+function getTodaySession() {
+  const t=today();
+  for (const w of PLAN) for (const s of w.sessions) if (sameDay(s.date,t)) return {session:s,week:w};
+  return null;
+}
+function getCurrentWeek() {
+  const t=today();
+  for (const w of PLAN) {
+    const first=w.sessions[0].date, last=w.sessions[w.sessions.length-1].date;
+    if (t>=first&&t<=last) return w.week;
+    const wm=new Date(first); wm.setDate(wm.getDate()-wm.getDay()+1);
+    const ws=new Date(wm); ws.setDate(ws.getDate()+6);
+    if (t>=wm&&t<=ws) return w.week;
+  }
+  return t<PLAN[0].sessions[0].date ? 0 : 10;
+}
+function getNextSession() {
+  const t=today();
+  for (const w of PLAN) for (const s of w.sessions) if (s.date>t) return {session:s,week:w};
+  return null;
+}
+function zoneColor(zone) {
+  return {'Z1':'#a8d5e8','Z2':'#3aab8e','Z3':'#e8a030','Z4':'#2b7fd4','Z5':'#9b2335','Z4–5':'#4a6cc4','Z3–4':'#91b45c'}[zone]||'#8aa5ba';
+}
+function zoneLabel(zone) {
+  return {'Z1':'Zone 1','Z2':'Zone 2','Z3':'Zone 3','Z4':'Zone 4','Z5':'Zone 5','Z4–5':'Zone 4–5','Z3–4':'Zone 3–4'}[zone]||zone;
+}
+
+// ── TABS ──────────────────────────────────────────────────────
+let activeTab='heute', rendered={};
+
+function switchTab(tab) {
+  activeTab=tab;
+  document.querySelectorAll('.tab-pane').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.toggle('active',b.dataset.tab===tab));
+  document.getElementById('tab-'+tab).classList.add('active');
+  renderTab(tab);
+}
+function renderAll() {
+  renderTab('heute');
+  if (rendered['woche'])  renderTab('woche');
+  if (rendered['plan'])   renderTab('plan');
+  if (rendered['zonen'])  renderTab('zonen');
+  if (openSessionId) renderModal(openSessionId);
+}
+function renderTab(tab) {
+  rendered[tab]=true;
+  if (tab==='heute')  renderHeute();
+  else if (tab==='woche') renderWoche();
+  else if (tab==='plan')  renderPlan();
+  else if (tab==='zonen') renderZonen();
+}
+
+// ── HEUTE ─────────────────────────────────────────────────────
+function renderHeute() {
+  const pane=document.getElementById('tab-heute');
+  const t=today();
+  const daysLeft=daysBetween(t,RACE_DAY);
+  const pct=Math.round((getDoneCount()/30)*100);
+  const todayEntry=getTodaySession();
+  const isAfterRace=t>RACE_DAY, isRaceDay=sameDay(t,RACE_DAY), isBeforeStart=t<PLAN_START;
+  const curWeekNum=getCurrentWeek();
+  const curWeekData=PLAN.find(w=>w.week===curWeekNum);
+
+  let html=`
+    <div class="countdown-block">
+      ${isAfterRace
+        ? `<div class="countdown-days" style="font-size:40px">🏅</div><div class="countdown-label">Wettkampf abgeschlossen</div>`
+        : isRaceDay
+        ? `<div class="countdown-days" style="font-size:36px;color:#fff">Race Day</div><div class="countdown-label" style="color:var(--accent)">Heute ist dein großer Tag!</div>`
+        : `<div class="countdown-days">T−${daysLeft}</div><div class="countdown-label">Tage bis zum Wettkampf</div>`}
+      <div class="countdown-date">12. Juli 2026 · Triathlon Olympic</div>
+      <div class="race-info">1,5 km Schwimmen · 40 km Rad · 10 km Lauf</div>
+    </div>
+    <div class="progress-bar-wrap">
+      <div class="progress-header">
+        <span class="label-mono">Fortschritt</span>
+        <span class="label-mono">${getDoneCount()} / 30 · ${pct}%</span>
+      </div>
+      <div class="progress-track"><div class="progress-fill" style="width:${pct}%"></div></div>
+    </div>`;
+
+  if (isAfterRace) {
+    html+=`<div class="card" style="text-align:center;padding:40px 20px">
+      <div style="font-size:48px;margin-bottom:12px">🏅</div>
+      <p class="section-title">Plan abgeschlossen</p>
+      <p style="color:var(--text-secondary);font-size:14px;margin-top:10px">Du hast ${getDoneCount()} von 30 Einheiten absolviert.</p>
+    </div>`;
+  } else if (isRaceDay) {
+    html+=`<div class="race-day-block">
+      <div class="race-day-title">Wettkampftag!</div>
+      <p style="font-size:14px;opacity:0.7;margin-bottom:4px">Ziel-Pace im Lauf: 5:50–6:10/km</p>
+      <p style="font-size:12px;opacity:0.45">Erste 2 km nach dem Rad bewusst kontrolliert anlaufen.</p>
+      <div class="race-distances">
+        <div class="race-dist"><div class="race-dist-val">1,5</div><div class="race-dist-label">km Swim</div></div>
+        <div class="race-sep">·</div>
+        <div class="race-dist"><div class="race-dist-val">40</div><div class="race-dist-label">km Bike</div></div>
+        <div class="race-sep">·</div>
+        <div class="race-dist"><div class="race-dist-val">10</div><div class="race-dist-label">km Run</div></div>
+      </div>
+    </div>`;
+  } else if (todayEntry) {
+    const {session:s,week:w}=todayEntry, done=isDone(s.id);
+    html+=`<div class="today-main-card">
+      <div class="today-card-header">
+        <div class="label-mono" style="display:flex;gap:8px;align-items:center;margin-bottom:4px">
+          <span>Woche ${w.week}</span><span style="opacity:0.3">·</span>
+          <span class="badge badge-accent">${w.phase}</span>
+        </div>
+        <div class="workout-headline">${s.type}</div>
+        <div class="workout-km">${s.km} km</div>
+      </div>
+      <div class="today-card-body">
+        <div class="workout-desc">${s.hint}</div>
+        <button class="done-btn ${done?'completed':''}" onclick="toggleDone('${s.id}')">
+          ${done?'Erledigt':'Als erledigt markieren'}
+        </button>
+      </div>
+    </div>`;
+  } else {
+    const next=getNextSession();
+    if (isBeforeStart) {
+      const dts=daysBetween(t,PLAN_START);
+      html+=`<div class="card rest-card"><div class="rest-icon">⏳</div>
+        <div class="rest-title">Plan startet in ${dts} Tagen</div>
+        <p style="color:var(--text-secondary);font-size:14px">Erste Einheit: Mi, 06. Mai 2026</p></div>`;
+    } else {
+      html+=`<div class="card rest-card"><div class="rest-icon">🌊</div>
+        <div class="rest-title">Heute Ruhetag</div>
+        <p style="color:var(--text-secondary);font-size:14px">Regeneration ist Training.</p></div>`;
+    }
+    if (next) {
+      html+=`<p class="week-mini-title" style="margin-bottom:8px">Nächste Einheit</p>
+        <div class="mini-session is-today" onclick="openModal('${next.session.id}')">
+          <div class="zone-dot" style="background:${zoneColor(next.session.primaryZone)}"></div>
+          <div class="mini-info">
+            <div class="mini-type">${next.session.type}</div>
+            <div class="mini-km">${next.session.day}, ${formatDate(next.session.date)} · ${next.session.km} km</div>
+          </div>
+        </div>`;
+    }
+  }
+
+  if (curWeekData&&!isAfterRace) {
+    html+=`<div class="spacer"></div><p class="week-mini-title">Woche ${curWeekData.week} im Überblick</p>
+      <div class="week-mini-sessions">`;
+    for (const s of curWeekData.sessions) {
+      const done=isDone(s.id), isT=sameDay(s.date,t);
+      html+=`<div class="mini-session ${isT?'is-today':''} ${done?'is-done':''}" onclick="openModal('${s.id}')">
+        <div class="zone-dot" style="background:${zoneColor(s.primaryZone)}"></div>
+        <div class="mini-info">
+          <div class="mini-type ${done?'is-done-text':''}">${s.type}</div>
+          <div class="mini-km">${s.day} ${formatDate(s.date)} · ${s.km} km</div>
+        </div>
+        ${done?'<span class="mini-check">✓</span>':''}
+      </div>`;
+    }
+    html+=`</div>`;
+  }
+  pane.innerHTML=html;
+}
+
+// ── WOCHE ─────────────────────────────────────────────────────
+function renderWoche() {
+  const pane=document.getElementById('tab-woche');
+  const t=today(), curWeek=getCurrentWeek();
+  let html=`<div style="margin-bottom:4px"><span class="section-title">Trainingsplan</span></div>`;
+  for (const w of PLAN) {
+    const isCurrent=w.week===curWeek, isPast=w.week<curWeek;
+    html+=`<div class="week-block ${isCurrent?'is-current':''} ${isPast?'is-past':''}">
+      <div class="week-block-header">
+        <span class="week-num">${w.week}</span>
+        <span class="week-phase">${w.phase}</span>
+        ${isCurrent?'<span class="week-current-label">Aktuelle Woche</span>':''}
+        <span class="week-km">${w.totalKm} km</span>
+      </div>
+      <div class="week-sessions-wrap">`;
+    for (const s of w.sessions) {
+      const done=isDone(s.id), isT=sameDay(s.date,t);
+      html+=`<div class="session-row ${isT?'is-today-row':''} ${done?'is-done-row':''}" onclick="openModal('${s.id}')">
+        <div class="zone-dot" style="background:${zoneColor(s.primaryZone)}"></div>
+        <span class="session-day-col">${s.day}</span>
+        <span class="session-date">${formatDate(s.date)}</span>
+        <span class="session-type">${s.type}</span>
+        <span class="session-km-col">${s.km} km</span>
+        <span class="session-done-mark">${done?'✓':''}</span>
+      </div>`;
+    }
+    html+=`</div></div>`;
+  }
+  html+=`<div class="race-day-block" style="margin-top:8px">
+    <div style="font-family:var(--mono);font-size:10px;letter-spacing:0.1em;opacity:0.5;text-transform:uppercase;margin-bottom:8px">So 12.07.2026</div>
+    <div class="race-day-title">Wettkampftag</div>
+    <div class="race-distances">
+      <div class="race-dist"><div class="race-dist-val">1,5</div><div class="race-dist-label">km Swim</div></div>
+      <div class="race-sep">·</div>
+      <div class="race-dist"><div class="race-dist-val">40</div><div class="race-dist-label">km Bike</div></div>
+      <div class="race-sep">·</div>
+      <div class="race-dist"><div class="race-dist-val">10</div><div class="race-dist-label">km Run</div></div>
+    </div>
+  </div><div class="spacer"></div>`;
+  pane.innerHTML=html;
+}
+
+// ── PLAN ──────────────────────────────────────────────────────
+function renderPlan() {
+  const pane=document.getElementById('tab-plan');
+  pane.innerHTML=`
+    <span class="section-title">Übersicht</span>
+    <div class="stats-grid">
+      <div class="stat-card"><div class="stat-value">${getDoneCount()}<span style="font-size:16px;opacity:0.5">/30</span></div><div class="stat-label">Einheiten</div></div>
+      <div class="stat-card"><div class="stat-value">${getDoneKm().toFixed(1)}<span style="font-size:14px;opacity:0.5"> km</span></div><div class="stat-label">Absolviert</div></div>
+      <div class="stat-card"><div class="stat-value">43,3</div><div class="stat-label">VO2max Start</div></div>
+      <div class="stat-card"><div class="stat-value">46–48</div><div class="stat-label">VO2max Ziel</div></div>
+    </div>
+    <div class="info-card card-accent">
+      <h3>Trainingsphilosophie</h3>
+      <p>3 Einheiten pro Woche. Mittwochs aktive Regeneration, freitags Langstreckenlauf für die aerobe Basis, sonntags das Intervalltraining als harter Reiz. 48 Stunden Pause zwischen harten Einheiten sind eingeplant und nicht verhandelbar.</p>
+    </div>
+    <div class="info-card card-sage">
+      <h3>Periodisierung</h3>
+      <ul>
+        <li><strong>Block 1 (Wo. 1–3):</strong> Aufbau der aeroben Basis und ersten VO2max-Reize.</li>
+        <li><strong>Block 2 (Wo. 4–7):</strong> Entlastungswoche, dann VO2max-Hauptphase mit 5×4 min als Königsdisziplin.</li>
+        <li><strong>Block 3 (Wo. 8–9):</strong> Wettkampfspezifisches Tempo (Zone 3), Generalprobe 10 km.</li>
+        <li><strong>Block 4 (Wo. 10):</strong> Tapering – Volumen stark reduziert, Qualität erhalten.</li>
+      </ul>
+    </div>
+    <div class="info-card">
+      <h3>Realistische Zielzeit</h3>
+      <p>10 km im Triathlon-Kontext bei ~6:00/km = <strong>rund 58–62 Minuten</strong>. Mit gutem Rennverlauf sind 55–58 Min möglich. Der Testlauf in Woche 9 liefert die ehrlichste Prognose.</p>
+    </div>
+    <div class="info-card">
+      <h3>Erfolgsfaktoren</h3>
+      <ul>
+        <li>Zone 2 ernst nehmen – das ist die Grundlage von allem</li>
+        <li>Schlafen: 7–8 Stunden sind Training, keine Faulheit</li>
+        <li>Protein: ~135 g/Tag (ca. 1,6 g/kg Körpergewicht)</li>
+        <li>HF-Anzeige der Apple Watch bei kurzen Intervallen träge → auf Empfinden achten</li>
+        <li>Übertraining-Warnsignale: Schlafprobleme, erhöhte Ruheherzfrequenz, anhaltende Müdigkeit</li>
+      </ul>
+    </div>
+    <button class="reset-btn" onclick="resetProgress()">Fortschritt zurücksetzen</button>
+    <div class="spacer"></div>`;
+}
+function resetProgress() {
+  if (confirm('Gesamten Trainingsfortschritt löschen? Diese Aktion kann nicht rückgängig gemacht werden.')) {
+    completed={}; saveCompleted(); renderAll();
+  }
+}
+
+// ── ZONEN ─────────────────────────────────────────────────────
+function renderZonen() {
+  const pane=document.getElementById('tab-zonen');
+  const zones=[
+    {name:'Zone 1',color:'#a8d5e8',purpose:'Recovery · Aktive Erholung',bpm:'< 133 bpm',pace:'> 7:30 /km',feel:'Vollständig entspannt, mühelos'},
+    {name:'Zone 2',color:'#3aab8e',purpose:'Grundlage · Aerobe Basis',bpm:'134–146 bpm',pace:'6:50–7:15 /km',feel:'Gespräch problemlos möglich, Nasenatmung'},
+    {name:'Zone 3',color:'#e8a030',purpose:'Schwelle · Wettkampftempo',bpm:'147–159 bpm',pace:'5:50–6:10 /km',feel:'Kurze Sätze möglich, spürbare Anstrengung'},
+    {name:'Zone 4',color:'#2b7fd4',purpose:'VO2max · Maximale Kapazität',bpm:'160–172 bpm',pace:'5:00–5:20 /km',feel:'Nur einzelne Wörter, sehr hart aber haltbar'},
+    {name:'Zone 5',color:'#9b2335',purpose:'Sprint · Neuromuskulär',bpm:'> 173 bpm',pace:'< 5:00 /km',feel:'Kein Gespräch, maximale Anstrengung'},
+  ];
+  let html=`<span class="section-title">Herzfrequenz-Zonen</span>
+    <div class="card" style="background:var(--bg-warm);margin-bottom:16px">
+      <p style="font-family:var(--mono);font-size:10px;color:var(--text-muted);letter-spacing:0.07em;text-transform:uppercase;margin-bottom:6px">Basis</p>
+      <p style="font-size:15px">Maximalpuls: <strong>188 bpm</strong> · Alter: 30 · Gewicht: 85 kg · VO2max: 43,3</p>
+    </div>`;
+  for (const z of zones) {
+    html+=`<div class="zone-card">
+      <div class="zone-color-bar" style="background:${z.color}"></div>
+      <div style="flex:1">
+        <div class="zone-name">${z.name}</div>
+        <div class="zone-purpose">${z.purpose}</div>
+        <div class="zone-stats">
+          <div><div class="zone-stat-label">HF</div><div class="zone-stat-val">${z.bpm}</div></div>
+          <div><div class="zone-stat-label">Pace</div><div class="zone-stat-val">${z.pace}</div></div>
+        </div>
+        <div style="font-size:12px;color:var(--text-muted);margin-top:8px;font-style:italic">${z.feel}</div>
+      </div>
+    </div>`;
+  }
+  html+=`<div class="info-card" style="margin-top:8px">
+    <h3>Sprechtest</h3>
+    <ul>
+      <li><strong>Z1–2:</strong> Vollständiger Satz ohne Pause möglich</li>
+      <li><strong>Z3:</strong> Kurze Sätze, leicht abgehackt</li>
+      <li><strong>Z4:</strong> Einzelne Wörter</li>
+      <li><strong>Z5:</strong> Kein Sprechen möglich</li>
+    </ul>
+  </div>
+  <div class="info-card">
+    <h3>Tipp: Apple Watch & kurze Intervalle</h3>
+    <p>Bei 2–4-Minuten-Intervallen zeigt die Apple Watch die HF oft erst am Ende des Blocks korrekt an. In den ersten 90 Sekunden auf das Empfinden achten, nicht auf die Zahl – die HF als Bestätigung nutzen, nicht als Steuerung.</p>
+  </div>
+  <div class="spacer"></div>`;
+  pane.innerHTML=html;
+}
+
+// ── MODAL ─────────────────────────────────────────────────────
+let openSessionId=null;
+
+function findSession(id) {
+  for (const w of PLAN) for (const s of w.sessions) if (s.id===id) return {session:s,week:w};
+  return null;
+}
+function openModal(id) {
+  openSessionId=id; renderModal(id);
+  document.getElementById('modal-overlay').classList.add('open');
+  document.body.style.overflow='hidden';
+}
+function closeModal() {
+  const overlay=document.getElementById('modal-overlay'), sheet=document.getElementById('modal-sheet');
+  overlay.classList.remove('open');
+  document.body.style.overflow=''; openSessionId=null;
+  setTimeout(()=>{ sheet.style.transform=''; },320);
+}
+function handleOverlayClick(e) { if (e.target===document.getElementById('modal-overlay')) closeModal(); }
+
+function renderModal(id) {
+  const entry=findSession(id); if (!entry) return;
+  const {session:s,week:w}=entry, done=isDone(s.id);
+  let blocksHtml='';
+  for (const b of s.blocks) {
+    blocksHtml+=`<div class="modal-block">
+      <div class="block-zone-bar" style="background:${zoneColor(b.zone)}"></div>
+      <div class="block-inner">
+        <div class="block-num">${b.num} · ${zoneLabel(b.zone)}</div>
+        <div class="block-label">${b.label}</div>
+        ${b.detail?`<div class="block-detail">${b.detail}</div>`:''}
+      </div>
+    </div>`;
+  }
+  document.getElementById('modal-body').innerHTML=`
+    <div class="modal-eyebrow">
+      <span>Woche ${w.week}</span><span class="sep">·</span>
+      <span>${w.phase}</span><span class="sep">·</span>
+      <span>${s.day} ${formatDate(s.date)}</span>
+    </div>
+    <div class="modal-title">${s.type}</div>
+    <div class="modal-km">${s.km} km</div>
+    <div class="modal-blocks">${blocksHtml}</div>
+    <div class="modal-hint">
+      <div class="modal-hint-label">Hinweise</div>
+      <div class="modal-hint-text">${s.hint}</div>
+    </div>
+    <button class="modal-done-btn ${done?'completed':''}" onclick="toggleDone('${s.id}')">
+      ${done?'Erledigt':'Als erledigt markieren'}
+    </button>
+    <button class="modal-close-btn" onclick="closeModal()">Schließen</button>`;
+}
+
+// ── TOUCH DRAG TO CLOSE ───────────────────────────────────────
+(function(){
+  const sheet=document.getElementById('modal-sheet');
+  let startY=0, curY=0, dragging=false;
+  sheet.addEventListener('touchstart',e=>{
+    if (sheet.scrollTop>0) return;
+    startY=e.touches[0].clientY; dragging=true; sheet.style.transition='none';
+  },{passive:true});
+  sheet.addEventListener('touchmove',e=>{
+    if (!dragging) return;
+    curY=e.touches[0].clientY;
+    const dy=Math.max(0,curY-startY);
+    sheet.style.transform=`translateY(${dy}px)`;
+  },{passive:true});
+  sheet.addEventListener('touchend',()=>{
+    if (!dragging) return; dragging=false;
+    sheet.style.transition='transform 0.3s cubic-bezier(0.32,0.72,0,1)';
+    if (curY-startY>100) closeModal(); else sheet.style.transform='translateY(0)';
+  });
+})();
+
+// ── INIT ──────────────────────────────────────────────────────
+renderHeute();
+</script>
+</body>
+</html>
